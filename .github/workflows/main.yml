@@ -1,0 +1,68 @@
+name: Production Deployment
+
+on:
+  push:
+    branches:
+      - prod_v2
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    name: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Synchronize npm lock file
+        run: |
+          npm install
+          npm install -g npm@latest
+
+      - name: Add Azure VM's host key to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.NEW_AZURE_VM_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy code to Azure VM
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.NEW_AZURE_VM_HOST }}
+          username: ${{ secrets.NEW_AZURE_VM_USERNAME }}
+          key: ${{ secrets.NEW_SSH_PRIVATE_KEY }}
+          source: .
+          target: /home/${{ secrets.NEW_AZURE_VM_USERNAME }}/prodV2/frontend
+
+      - name: Copy env
+        run: |
+          echo "${{ secrets.NEW_SSH_PRIVATE_KEY }}" > private-key.pem
+          chmod 600 private-key.pem
+          ssh -i private-key.pem ${{ secrets.NEW_AZURE_VM_USERNAME }}@${{ secrets.NEW_AZURE_VM_HOST }} -o StrictHostKeyChecking=no << 'ENDSSH'
+            cd /home/${{ secrets.NEW_AZURE_VM_USERNAME }}/prodV2/frontend
+            touch .env.local
+            cp /home/${{ secrets.NEW_AZURE_VM_USERNAME }}/prodV2/Medlr_MainWebsite/.env.local ./.env.local
+          ENDSSH
+
+      - name: Build and run Docker image on Azure VM
+        run: |
+          echo "${{ secrets.NEW_SSH_PRIVATE_KEY }}" > private-key.pem
+          chmod 600 private-key.pem
+          ssh -i private-key.pem ${{ secrets.NEW_AZURE_VM_USERNAME }}@${{ secrets.NEW_AZURE_VM_HOST }} -o StrictHostKeyChecking=no << 'ENDSSH'
+            cd /home/${{ secrets.NEW_AZURE_VM_USERNAME }}/prodV2/frontend
+            sudo systemctl stop prod-frontend || true  # Ensure the command doesn't fail if the service isn't running
+            docker build --no-cache -t prod-frontend .
+            docker images -a
+            
+            # Remove the old container if it exists
+            docker rm -f my-prod-frontend || true
+            
+            # Run the new Docker container
+            docker run --name my-prod-frontend -d -p 5000:5000 prod-frontend:latest
+            
+            docker ps -a
+            echo "ProdV2 deployment complete"
+          ENDSSH
