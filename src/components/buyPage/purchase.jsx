@@ -15,7 +15,7 @@ const PurchaseService = () => {
 
     const handlePayment = () => {
         const options = {
-            key: 'rzp_test_L4tU287IrZGte7', // Replace with your Razorpay key
+            key: process.env.REACT_APP_RAZORPAY_SECRET, // Replace with your Razorpay key
             amount: selectedService.price, // Amount in paise
             currency: 'INR',
             name: 'Your Service Name',
