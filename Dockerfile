@@ -1,29 +1,13 @@
-# Step 1: Build the React app
-FROM node:18 AS build
-
-# Set the working directory
-WORKDIR /app
-
-# Copy package.json and package-lock.json
+# Use Node.js as the base image
+FROM node:18
+# Create app directory
+WORKDIR /medlr/frontend
+# Install app dependencies
 COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code
+RUN npm ci
+# Bundle app source
 COPY . .
-
-# Build the React app
-RUN npm run build
-
-# Step 2: Serve the app using a web server
-FROM nginx:alpine
-
-# Copy the build files from the previous stage
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Expose the port Nginx is running on
+# Expose the port the app runs on (default for Vite is 5173)
 EXPOSE 5000
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start the app in development mode
+CMD ["npm", "run", "dev"]
