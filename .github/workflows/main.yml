@@ -3,7 +3,7 @@ name: Production Deployment
 on:
   push:
     branches:
-      - prod_v2
+      - master
 
 jobs:
   build-deploy:
@@ -23,37 +23,37 @@ jobs:
           npm install
           npm install -g npm@latest
 
-      - name: Add Azure VM's host key to known hosts
+      - name: Add AWS VM's host key to known hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.NEW_AZURE_VM_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.HOST_IP }} >> ~/.ssh/known_hosts
 
-      - name: Copy code to Azure VM
+      - name: Copy code to AWS VM
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.NEW_AZURE_VM_HOST }}
-          username: ${{ secrets.NEW_AZURE_VM_USERNAME }}
-          key: ${{ secrets.NEW_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: .
-          target: /home/${{ secrets.NEW_AZURE_VM_USERNAME }}/prodV2/frontend
+          target: /home/${{ secrets.USERNAME }}/prod/frontend
 
-      - name: Copy env
-        run: |
-          echo "${{ secrets.NEW_SSH_PRIVATE_KEY }}" > private-key.pem
-          chmod 600 private-key.pem
-          ssh -i private-key.pem ${{ secrets.NEW_AZURE_VM_USERNAME }}@${{ secrets.NEW_AZURE_VM_HOST }} -o StrictHostKeyChecking=no << 'ENDSSH'
-            cd /home/${{ secrets.NEW_AZURE_VM_USERNAME }}/prodV2/frontend
-            touch .env.local
-            cp /home/${{ secrets.NEW_AZURE_VM_USERNAME }}/prodV2/Medlr_MainWebsite/.env.local ./.env.local
-          ENDSSH
+      # - name: Copy env
+      #   run: |
+      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > private-key.pem
+      #     chmod 600 private-key.pem
+      #     ssh -i private-key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST_IP }} -o StrictHostKeyChecking=no << 'ENDSSH'
+      #       cd /home/${{ secrets.USERNAME }}/prod/frontend
+      #       touch .env.local
+      #       cp /home/${{ secrets.USERNAME }}/env/prod/frontend/.env.local ./.env.local
+      #     ENDSSH
 
-      - name: Build and run Docker image on Azure VM
+      - name: Build and run Docker image on AWS VM
         run: |
-          echo "${{ secrets.NEW_SSH_PRIVATE_KEY }}" > private-key.pem
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private-key.pem
           chmod 600 private-key.pem
-          ssh -i private-key.pem ${{ secrets.NEW_AZURE_VM_USERNAME }}@${{ secrets.NEW_AZURE_VM_HOST }} -o StrictHostKeyChecking=no << 'ENDSSH'
-            cd /home/${{ secrets.NEW_AZURE_VM_USERNAME }}/prodV2/frontend
-            sudo systemctl stop prod-frontend || true  # Ensure the command doesn't fail if the service isn't running
+          ssh -i private-key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST_IP }} -o StrictHostKeyChecking=no << 'ENDSSH'
+            cd /home/${{ secrets.USERNAME }}/prod/frontend
+            sudo systemctl stop prod-frontend || true  
             docker build --no-cache -t prod-frontend .
             docker images -a
             
@@ -64,5 +64,5 @@ jobs:
             docker run --name my-prod-frontend -d -p 5000:5000 prod-frontend:latest
             
             docker ps -a
-            echo "ProdV2 deployment complete"
+            echo "Prod deployment complete"
           ENDSSH
