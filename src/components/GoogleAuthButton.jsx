@@ -4,7 +4,7 @@ const GoogleAuthButton = () => {
 
     const handleGoogleSignIn = () => {
         // Redirect to your server's Google OAuth endpoint
-        window.location.href = '{process.env.REACT_APP_HOST}/auth/google';
+        window.location.href = 'http://localhost:3000/api/auth/google';
     };
 
     return (

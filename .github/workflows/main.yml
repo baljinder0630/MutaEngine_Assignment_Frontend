@@ -38,15 +38,15 @@ jobs:
           source: .
           target: /home/${{ secrets.USERNAME }}/prod/frontend
 
-      - name: Copy env
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private-key.pem
-          chmod 600 private-key.pem
-          ssh -i private-key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST_IP }} -o StrictHostKeyChecking=no << 'ENDSSH'
-            cd /home/${{ secrets.USERNAME }}/prod/frontend
-            touch .env.local
-            cp /home/${{ secrets.USERNAME }}/env/prod/frontend/.env ./.env
-          ENDSSH
+      # - name: Copy env
+      #   run: |
+      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > private-key.pem
+      #     chmod 600 private-key.pem
+      #     ssh -i private-key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST_IP }} -o StrictHostKeyChecking=no << 'ENDSSH'
+      #       cd /home/${{ secrets.USERNAME }}/prod/frontend
+      #       touch .env.local
+      #       cp /home/${{ secrets.USERNAME }}/env/prod/frontend/.env.local ./.env.local
+      #     ENDSSH
 
       - name: Build and run Docker image on AWS VM
         run: |

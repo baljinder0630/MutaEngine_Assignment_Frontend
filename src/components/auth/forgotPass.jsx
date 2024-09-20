@@ -31,7 +31,7 @@ const ForgotPassword = () => {
                 alert('Please complete the reCAPTCHA');
                 return;
             }
-            const response = await axios.post(`{process.env.REACT_APP_HOST}/forgotpassword`, { email, recaptchaToken });
+            const response = await axios.post(`http://localhost:3000/api/forgotpassword`, { email, recaptchaToken });
             setMessage(response.data.message);
 
         } catch (error) {

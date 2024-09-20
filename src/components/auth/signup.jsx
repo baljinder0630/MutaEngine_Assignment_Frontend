@@ -50,7 +50,7 @@ const Signup = () => {
                 setSubmitting(false);
                 return;
             }
-            await axios.post('{process.env.REACT_APP_HOST}/signup', {
+            await axios.post('http://localhost:3000/api/signup', {
                 firstName: values.firstname,
                 lastName: values.lastname,
                 email: values.email,

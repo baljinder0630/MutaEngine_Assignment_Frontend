@@ -24,9 +24,8 @@ const VerifyEmail = () => {
             }
 
             try {
-                console.log(process.env.REACT_APP_HOST)
                 const response = await fetch(
-                    `{process.env.REACT_APP_HOST}/verifyemail?token=${token}`, {
+                    `http://localhost:3000/api/verifyemail?token=${token}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
