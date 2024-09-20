@@ -10,4 +10,4 @@ COPY . .
 # Expose the port the app runs on (default for Vite is 5173)
 EXPOSE 5173
 # Start the app in development mode
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev", "--", "--host"]
