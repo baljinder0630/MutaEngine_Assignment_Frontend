@@ -49,7 +49,7 @@ jobs:
 
       - name: Build and run Docker image on AWS VM
         run: |
-          echo "${{ secrets.NEW_SSH_PRIVATE_KEY }}" > private-key.pem
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private-key.pem
           chmod 600 private-key.pem
           ssh -i private-key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST_IP }} -o StrictHostKeyChecking=no << 'ENDSSH'
             cd /home/${{ secrets.USERNAME }}/prod/frontend
