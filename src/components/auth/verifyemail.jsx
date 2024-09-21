@@ -25,7 +25,7 @@ const VerifyEmail = () => {
 
             try {
                 const response = await fetch(
-                    `http://localhost:3000/api/verifyemail?token=${token}`, {
+                    `${import.meta.env.VITE_REACT_APP_HOST}/verifyemail?token=${token}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

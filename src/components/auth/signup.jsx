@@ -50,7 +50,7 @@ const Signup = () => {
                 setSubmitting(false);
                 return;
             }
-            await axios.post('http://localhost:3000/api/signup', {
+            await axios.post(`${import.meta.env.VITE_REACT_APP_HOST}/signup`, {
                 firstName: values.firstname,
                 lastName: values.lastname,
                 email: values.email,

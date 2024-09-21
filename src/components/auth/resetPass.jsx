@@ -31,7 +31,7 @@ const ResetPassword = () => {
         const token = query.get('token');
         const id = query.get('id');
         try {
-            const response = await axios.post(`http://localhost:3000/api/resetpassword/?token=${token}&id=${id}`, { password });
+            const response = await axios.post(`${import.meta.env.VITE_REACT_APP_HOST}/resetpassword/?token=${token}&id=${id}`, { password });
             setMessage(response.data.message);
         } catch (error) {
             console.error('Error:', error);

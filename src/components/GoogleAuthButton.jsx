@@ -2,9 +2,10 @@ import './AuthStyles.css';
 
 const GoogleAuthButton = () => {
 
+    console.log("Vit" + import.meta.env.VITE_REACT_APP_HOST)
     const handleGoogleSignIn = () => {
         // Redirect to your server's Google OAuth endpoint
-        window.location.href = 'http://localhost:3000/api/auth/google';
+        window.location.href = `${import.meta.env.VITE_REACT_APP_HOST}/auth/google`;
     };
 
     return (
