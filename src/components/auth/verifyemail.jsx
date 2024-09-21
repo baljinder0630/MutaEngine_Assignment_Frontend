@@ -38,8 +38,8 @@ const VerifyEmail = () => {
                     login(); // Log the user in via context
                     setMessage('Email verified successfully! Redirecting to home...');
                     setTimeout(() => {
-                        navigate('/home'); // Redirect to home or another page
-                    }, 2000);
+                        navigate('/'); // Redirect to home or another page
+                    }, 1000);
                 } else {
                     setMessage(data.message || 'Verification failed. Please try again.');
                 }
